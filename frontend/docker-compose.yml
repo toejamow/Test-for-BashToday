@@ -1,0 +1,11 @@
+services:
+  nuxt:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - HOST=0.0.0.0
+    command: "npm run dev"
