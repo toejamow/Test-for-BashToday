@@ -1,9 +1,11 @@
 export const useAuth = () => {
   const user = useState('user', () => null)
   const router = useRouter()
+  const config = useRuntimeConfig()
+  
 
 const apiFetch = $fetch.create({
-    baseURL: 'http://localhost', 
+    baseURL: config.public.backendUrl, 
     headers: {
       'Accept': 'application/json',
     },

@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-
+const config = useRuntimeConfig();
 const route = useRoute()
 
 const page = computed(() => Number(route.query.page) || 1)
@@ -14,7 +14,8 @@ function to(page) {
   }
 }
 
-const { data: posts, pending, error } = await useFetch('http://localhost/api/posts', {
+const { data: posts, pending, error } = await useFetch('/posts', {
+  baseURL: config.public.apiBase,
   server: false,
   query: { page: page }, 
   watch: [page] 

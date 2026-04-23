@@ -1,8 +1,8 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+const config = useRuntimeConfig();
 
-// const { user, fetchUser } = useAuth()
 const router = useRouter()
 
 definePageMeta({
@@ -25,7 +25,8 @@ const onSubmit = async () => {
   errorMessage.value = ''
   
   try {
-    await $fetch('http://localhost/api/posts', {
+    await $fetch('/posts', {
+      baseURL: config.public.apiBase,
       method: 'POST',
       body: state,
       headers: {

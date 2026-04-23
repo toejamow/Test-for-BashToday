@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+const config = useRuntimeConfig();
 const { user } = useAuth()
 
 const route = useRoute()
@@ -18,7 +19,8 @@ const deletePost = async () => {
   isDeleting.value = true
 
   try {
-    await $fetch(`http://localhost/api/posts/${postId}`, {
+    await $fetch(`/posts/${postId}`, {
+      baseURL: config.public.apiBase,
       method: 'DELETE',
       headers: {
         'Accept': 'application/json',
