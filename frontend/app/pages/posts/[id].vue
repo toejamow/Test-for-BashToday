@@ -1,18 +1,19 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-const config = useRuntimeConfig();
+const config = useRuntimeConfig()
 const { user } = useAuth()
 
 const route = useRoute()
 const postId = route.params.id
 
-const { data: post, pending, error } = await useFetch(`http://127.0.0.1/api/posts/${postId}`, {
-  server: false
+const { data: post, pending, error } = await useFetch(`/posts/${postId}`, {
+  baseURL: config.public.apiBase,
 })
 
 const router = useRouter()
 const isDeleting = ref(false)
+const isDeleteOpen = ref(false)
 
 // Функция удаления
 const deletePost = async () => {
@@ -35,6 +36,7 @@ const deletePost = async () => {
     alert('Произошла ошибка при удалении поста.')
   } finally {
     isDeleting.value = false
+    isDeleteOpen.value = false
   }
 }
 
@@ -64,7 +66,8 @@ const updatePost = async () => {
   isLoading.value = true
 
   try {
-    await $fetch(`http://localhost/api/posts/${postId}`, {
+    await $fetch(`/posts/${postId}`, {
+      baseURL: config.public.apiBase,
       method: 'PUT',
       body: form.value,
       headers: {
@@ -106,18 +109,28 @@ const cancelEdit = () => {
         Назад к списку
       </UButton>
 
-      <div v-if="user && user.id === post.user_id" class="control-post flex gap-3">
+      <div v-if="post && user.id === post.user_id" class="control-post flex gap-3">
 
         <template v-if="!isEditing">
           <UButton @click="isEditing = true" color="primary" variant="soft" icon="i-lucide-square-pen" />
 
-          <UModal :title='`Удалить пост "${post.title}"?`'>
-            <UButton variant="outline" color="neutral" icon="i-lucide-trash" />
+          <UButton @click="isDeleteOpen = true" variant="outline" color="neutral" icon="i-lucide-trash" />
+
+        </template>
+
+        <template v-else>
+          <UButton @click="updatePost" color="primary" icon="i-lucide-check" />
+
+          <UButton @click="cancelEdit" color="neutral" variant="outline" icon="i-lucide-x" />
+        </template>
+
+        <template>
+          <UModal v-model:open="isDeleteOpen" :title='`Удалить пост "${post.title}"?`'>
             <template #body>
               <div class="modal flex flex-col items-center gap-4">
                 <p class="text-center">Вы уверены, что хотите удалить этот пост?</p>
                 <div class="delete-buttons flex gap-2">
-                  <UButton color="neutral" variant="outline">
+                  <UButton @click="isDeleteOpen = false" color="neutral" variant="outline">
                     Отмена
                   </UButton>
 
@@ -128,12 +141,6 @@ const cancelEdit = () => {
               </div>
             </template>
           </UModal>
-        </template>
-
-        <template v-else>
-          <UButton @click="updatePost" color="primary" icon="i-lucide-check" />
-
-          <UButton @click="cancelEdit" color="neutral" variant="outline" icon="i-lucide-x" />
         </template>
       </div>
     </div>
